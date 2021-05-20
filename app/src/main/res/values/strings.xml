@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">TaskManagement</string>
+
+    <!--  MainActivity -->
+    <string name="tv_list_of_tasks">Lista zaplanowanych zadań</string>
+    <string name="btn_add_new_task_title">Dodaj nowe zadanie</string>
+
+    <!--  AddTaskActivity -->
+    <string name="tv_task_name">Nazwa zadania: </string>
+    <string name="et_task_name_hint">np. Zjeść obiad</string>
+    <string name="tv_task_date">Data wykonania: </string>
+    <string name="et_task_date_hint">data</string>
+
+    <string name="rb_job">praca</string>
+    <string name="rb_shopping">zakupy</string>
+    <string name="rb_other">inne</string>
+
+    <string name="btn_add_task_title">Dodaj nowe zadanie</string>
+    <string name="btn_cancel_title">Anuluj</string>
+
 </resources>
