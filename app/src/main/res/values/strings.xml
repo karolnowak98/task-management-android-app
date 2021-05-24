@@ -9,7 +9,7 @@
     <string name="tv_task_name">Nazwa zadania: </string>
     <string name="et_task_name_hint">np. Zjeść obiad</string>
     <string name="tv_task_date">Data wykonania: </string>
-    <string name="et_task_date_hint">data</string>
+    <string name="btnpicker_task_date_hint">data</string>
 
     <string name="rb_job">praca</string>
     <string name="rb_shopping">zakupy</string>

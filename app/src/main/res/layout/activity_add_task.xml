@@ -36,15 +36,17 @@
         android:id="@+id/tv_task_date"
         android:text="@string/tv_task_date" />
 
-    <EditText
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toRightOf="@+id/tv_task_date"
         app:layout_constraintBaseline_toBaselineOf="@id/tv_task_date"
-        android:id="@+id/et_task_date"
-        android:hint="@string/et_task_date_hint"
-        android:autofillHints="@string/et_task_date_hint"
-        android:inputType="date"/>
+        android:id="@+id/btn_picker_task_date"
+        android:hint="@string/btnpicker_task_date_hint"
+        android:autofillHints="@string/btnpicker_task_date_hint"
+        style="?android:spinnerStyle"
+        android:onClick="openDatePicker"
+        android:textColor="@color/black"/>
 
     <RadioGroup
         android:layout_width="wrap_content"
@@ -91,7 +93,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginStart="10dp"
                 android:id="@+id/btn_add_task"
-                android:text="@string/btn_add_task_title"/>
+                android:text="@string/btn_add_task_title" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -100,7 +102,9 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:text="@string/btn_cancel_title"/>
+            android:id="@+id/btn_cancel"
+            android:text="@string/btn_cancel_title"
+            />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
