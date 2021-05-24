@@ -1,2 +1,2 @@
 # task-management-android-app
-Simple task management android application - using Java
+Simple task management (TODO) android application - using Java
