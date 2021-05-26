@@ -1,72 +1,64 @@
-package com.example.taskmanagement;
+package com.example.taskmanagement.activities;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.TextView;
-import android.widget.TimePicker;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.text.SimpleDateFormat;
+import com.example.taskmanagement.R;
+import com.example.taskmanagement.adapters.TaskListAdapter;
+import com.example.taskmanagement.db.Task;
+import com.example.taskmanagement.db.RoomDB;
+
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
+import java.util.List;
 
 public class AddTaskActivity extends AppCompatActivity {
 
     private DatePickerDialog datePickerDialog;
-    private Button btnTaskDate;
+    private Button btnTaskDate, btnAddTask, btnCancel;
     private EditText etTaskName;
-    private TextView tvTaskName;
     private RadioGroup rgTasks;
     private boolean test = true;
+    private TaskListAdapter adapter;
+    private final List<Task> dataList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_task);
 
         initDatePicker();
 
-        btnTaskDate = findViewById(R.id.btn_picker_task_date);
-        Button btnAddTask = findViewById(R.id.btn_add_task);
-        Button btnCancel = findViewById(R.id.btn_cancel);
         etTaskName = findViewById(R.id.et_task_name);
-        tvTaskName = findViewById(R.id.tv_task_name);
+        btnTaskDate = findViewById(R.id.btn_picker_task_date);
         rgTasks = findViewById(R.id.rg_tasks);
+        btnAddTask = findViewById(R.id.btn_add_task);
+        btnCancel = findViewById(R.id.btn_cancel);
 
-        if(test)
-            btnTaskDate.setText(getTodaysDate());
+        btnTaskDate.setText(getTodayDate());
 
         btnAddTask.setBackgroundColor(getResources().getColor(R.color.btn_green));
         btnCancel.setBackgroundColor(getResources().getColor(R.color.btn_red));
 
         btnAddTask.setOnClickListener(v -> {
-            Intent intent = new Intent(this, MainActivity.class);
-            if(validateNewTask()) {
-                String taskCategory = ((RadioButton) findViewById(rgTasks.getCheckedRadioButtonId())).getText().toString();
-                intent.putExtra("taskName", etTaskName.getText().toString());
-                intent.putExtra("taskCategory", taskCategory);
-                intent.putExtra("taskDate", btnTaskDate.getText().toString());
-                MainActivity.NUMBER_OF_TASKS++;
-                setResult(RESULT_OK, intent);
-                finish();
-            }
-            else{
-                //setResult(RESULT_OK, intent);
-                //finish();
+            if(validateNewTask()){
+                String taskName = etTaskName.getText().toString().trim();
+                String taskDate = btnTaskDate.getText().toString().trim();
+                String taskCategory = ((RadioButton) findViewById(rgTasks.getCheckedRadioButtonId())).getText().toString().trim();
+                saveNewTask(taskName, taskDate, taskCategory);
             }
         });
 
@@ -75,31 +67,6 @@ public class AddTaskActivity extends AppCompatActivity {
             setResult(RESULT_CANCELED, intent);
             finish();
         });
-    }
-
-    private void showDateTimeDialog(final Button btnTaskDate) {
-        final Calendar calendar = Calendar.getInstance();
-        DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                calendar.set(Calendar.YEAR,year);
-                calendar.set(Calendar.MONTH,month);
-                calendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
-
-                TimePickerDialog.OnTimeSetListener timeSetListener = new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                        calendar.set(Calendar.MINUTE,minute);
-
-                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yy-MM-dd HH:mm");
-
-                        btnTaskDate.setText(simpleDateFormat.format(calendar));
-                    }
-                };
-                new TimePickerDialog(AddTaskActivity.this, timeSetListener, calendar.get(Calendar.HOUR_OF_DAY),calendar.get(Calendar.MINUTE),false).show();
-            }
-        };
     }
 
     @Override
@@ -122,7 +89,7 @@ public class AddTaskActivity extends AppCompatActivity {
 
     //______________________DATE METHODS______________________
 
-    private String getTodaysDate() {
+    private String getTodayDate() {
         Calendar cal = Calendar.getInstance();
         int year = cal.get(Calendar.YEAR);
         int month = cal.get(Calendar.MONTH);
@@ -186,8 +153,33 @@ public class AddTaskActivity extends AppCompatActivity {
     }
 
     private boolean validateNewTask(){
-        if ((etTaskName.getText().toString().trim().equals("")) || (rgTasks.getCheckedRadioButtonId() == -1))
-            return false;
-        return true;
+        if (rgTasks.getCheckedRadioButtonId() == -1) {
+            RadioButton rb = findViewById(R.id.rb_other);
+            rb.setError(getString(R.string.err_rg_task_category));
+        }
+        if (etTaskName.getText().toString().trim().equals(""))
+            etTaskName.setError(getString(R.string.err_task_name));
+        Log.e("1", String.valueOf(rgTasks.getCheckedRadioButtonId()));
+
+        return (!etTaskName.getText().toString().trim().equals("")) && (rgTasks.getCheckedRadioButtonId() != -1);
+    }
+
+    private void saveNewTask(String taskName, String taskDate, String taskCategory){
+
+        RoomDB database = RoomDB.getInstance(this.getApplicationContext());
+        Intent intent = new Intent(this, MainActivity.class);
+        Task task = new Task();
+        task.setTaskName(taskName);
+        task.setTaskCategory(taskCategory);
+        task.setTaskDate(taskDate);
+        database.taskDao().insertTask(task);
+        /*dataList.clear();
+        dataList.addAll(database.taskDao().getAllTasks());
+        adapter.notifyDataSetChanged();*/
+
+        setResult(RESULT_OK, intent);
+        Toast toast = Toast.makeText(getApplicationContext(), R.string.toast_text, Toast.LENGTH_SHORT);
+        toast.show();
+        finish();
     }
 }
