@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,42 +15,40 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.taskmanagement.R;
-import com.example.taskmanagement.adapters.TaskListAdapter;
-import com.example.taskmanagement.db.Task;
 import com.example.taskmanagement.db.RoomDB;
+import com.example.taskmanagement.db.Task;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 public class AddTaskActivity extends AppCompatActivity {
 
-    private DatePickerDialog datePickerDialog;
-    private Button btnTaskDate, btnAddTask, btnCancel;
+    public static final String[] MONTHS = {"stycznia", "lutego", "marca", "kwietnia", "maja", "czerwca", "lipca", "sierpnia", "września", "października", "listopada", "grudnia"};
+
+    private Button btnTaskDate;
     private EditText etTaskName;
     private RadioGroup rgTasks;
-    private boolean test = true;
-    private TaskListAdapter adapter;
-    private final List<Task> dataList = new ArrayList<>();
+    private DatePickerDialog datePickerDialog;
+    private AlertDialog.Builder alertDialogBuilder;
+    private AlertDialog alertDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_task);
 
         initDatePicker();
+        initAlertDialogBuilder();
 
+
+
+        Button btnAddTask = findViewById(R.id.btn_add_task);
+        Button btnCancel = findViewById(R.id.btn_cancel);
         etTaskName = findViewById(R.id.et_task_name);
         btnTaskDate = findViewById(R.id.btn_picker_task_date);
         rgTasks = findViewById(R.id.rg_tasks);
-        btnAddTask = findViewById(R.id.btn_add_task);
-        btnCancel = findViewById(R.id.btn_cancel);
+        alertDialog = alertDialogBuilder.create();
 
         btnTaskDate.setText(getTodayDate());
-
-        btnAddTask.setBackgroundColor(getResources().getColor(R.color.btn_green));
-        btnCancel.setBackgroundColor(getResources().getColor(R.color.btn_red));
 
         btnAddTask.setOnClickListener(v -> {
             if(validateNewTask()){
@@ -60,35 +57,79 @@ public class AddTaskActivity extends AppCompatActivity {
                 String taskCategory = ((RadioButton) findViewById(rgTasks.getCheckedRadioButtonId())).getText().toString().trim();
                 saveNewTask(taskName, taskDate, taskCategory);
             }
+            else alertDialog.show();
         });
 
         btnCancel.setOnClickListener(v -> {
-            Intent intent = new Intent();
-            setResult(RESULT_CANCELED, intent);
+            setResult(RESULT_CANCELED, new Intent());
             finish();
         });
     }
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putBoolean("alert_dialog_status", alertDialog.isShowing());
+        outState.putInt("year", datePickerDialog.getDatePicker().getYear());
+        outState.putInt("month", datePickerDialog.getDatePicker().getMonth());
+        outState.putInt("day", datePickerDialog.getDatePicker().getDayOfMonth());
 
-        outState.putInt("YEAR", datePickerDialog.getDatePicker().getYear());
-        outState.putInt("MONTH", datePickerDialog.getDatePicker().getMonth());
-        outState.putInt("DAY", datePickerDialog.getDatePicker().getDayOfMonth());
         super.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-        test = false;
         super.onRestoreInstanceState(savedInstanceState);
-        datePickerDialog.getDatePicker().updateDate(savedInstanceState.getInt("YEAR"),
-                                                    savedInstanceState.getInt("MONTH"),
-                                                    savedInstanceState.getInt("DAY"));
+
+        if(savedInstanceState.getBoolean("alert_dialog_status"))
+            alertDialog.show();
+
+        int year = savedInstanceState.getInt("year");
+        int month = savedInstanceState.getInt("month");
+        int day = savedInstanceState.getInt("day");
+
+        datePickerDialog.getDatePicker().updateDate(year, month, day);
+
+        month+=1;
+        btnTaskDate.setText(makeDateString(day, month, year));
+    }
+
+    private void initAlertDialogBuilder(){
+        alertDialogBuilder = new AlertDialog.Builder(this)
+                .setTitle(R.string.dialog_title)
+                .setMessage(R.string.dialog_text)
+                .setPositiveButton(R.string.dialog_yes, null)
+                .setNegativeButton(R.string.dialog_no, (dialog, which) -> {
+                    setResult(RESULT_CANCELED, new Intent());
+                    finish();
+                });
+    }
+
+    private boolean validateNewTask(){
+        if (etTaskName.getText().toString().trim().equals(""))
+            etTaskName.setError(getString(R.string.err_task_name));
+
+        return (!etTaskName.getText().toString().trim().equals("")) && (rgTasks.getCheckedRadioButtonId() != -1);
+    }
+
+    private void saveNewTask(String taskName, String taskDate, String taskCategory){
+        RoomDB database = RoomDB.getInstance(this.getApplicationContext());
+        Intent intent = new Intent(this, MainActivity.class);
+        Task task = new Task();
+
+        task.setTaskName(taskName);
+        task.setTaskCategory(taskCategory);
+        task.setTaskDate(taskDate);
+
+        database.taskDao().insertTask(task);
+
+        Toast toast = Toast.makeText(this, R.string.toast_text, Toast.LENGTH_SHORT);
+        toast.show();
+
+        setResult(RESULT_OK, intent);
+        finish();
     }
 
     //______________________DATE METHODS______________________
-
     private String getTodayDate() {
         Calendar cal = Calendar.getInstance();
         int year = cal.get(Calendar.YEAR);
@@ -110,76 +151,17 @@ public class AddTaskActivity extends AppCompatActivity {
         int month = cal.get(Calendar.MONTH);
         int day = cal.get(Calendar.DAY_OF_MONTH);
 
-        int style = AlertDialog.THEME_HOLO_LIGHT;
+        int style = AlertDialog.THEME_HOLO_DARK;
 
         datePickerDialog = new DatePickerDialog(this, style, dateSetListener, year, month, day);
         datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis()-10000);
     }
 
     private String makeDateString(int day, int month, int year) {
-        return day + " " + getMonthFormat(month) + " " + year + " r.     ";
-    }
-
-    private String getMonthFormat(int month) {
-        if(month == 1)
-            return "stycznia";
-        if(month == 2)
-            return "lutego";
-        if(month == 3)
-            return "marca";
-        if(month == 4)
-            return "kwietnia";
-        if(month == 5)
-            return "maja";
-        if(month == 6)
-            return "czerwca";
-        if(month == 7)
-            return "lipca";
-        if(month == 8)
-            return "sierpnia";
-        if(month == 9)
-            return "września";
-        if(month == 10)
-            return "października";
-        if(month == 11)
-            return "listopada";
-        if(month == 12)
-            return "grudnia";
-        return "stycznia";
+        return day + " " + MONTHS[month] + " " + year + " r.";
     }
 
     public void openDatePicker(View view) {
         datePickerDialog.show();
-    }
-
-    private boolean validateNewTask(){
-        if (rgTasks.getCheckedRadioButtonId() == -1) {
-            RadioButton rb = findViewById(R.id.rb_other);
-            rb.setError(getString(R.string.err_rg_task_category));
-        }
-        if (etTaskName.getText().toString().trim().equals(""))
-            etTaskName.setError(getString(R.string.err_task_name));
-        Log.e("1", String.valueOf(rgTasks.getCheckedRadioButtonId()));
-
-        return (!etTaskName.getText().toString().trim().equals("")) && (rgTasks.getCheckedRadioButtonId() != -1);
-    }
-
-    private void saveNewTask(String taskName, String taskDate, String taskCategory){
-
-        RoomDB database = RoomDB.getInstance(this.getApplicationContext());
-        Intent intent = new Intent(this, MainActivity.class);
-        Task task = new Task();
-        task.setTaskName(taskName);
-        task.setTaskCategory(taskCategory);
-        task.setTaskDate(taskDate);
-        database.taskDao().insertTask(task);
-        /*dataList.clear();
-        dataList.addAll(database.taskDao().getAllTasks());
-        adapter.notifyDataSetChanged();*/
-
-        setResult(RESULT_OK, intent);
-        Toast toast = Toast.makeText(getApplicationContext(), R.string.toast_text, Toast.LENGTH_SHORT);
-        toast.show();
-        finish();
     }
 }

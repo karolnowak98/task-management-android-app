@@ -3,13 +3,15 @@
     package="com.example.taskmanagement">
 
     <application
-        android:allowBackup="true"
         android:screenOrientation="sensorLandscape"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.TaskManagement">
+        android:theme="@style/Theme.TaskManagement"
+        android:allowBackup="true"
+        android:fullBackupContent="true" >
+
         <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

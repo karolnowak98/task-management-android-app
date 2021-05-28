@@ -6,15 +6,12 @@ import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
 
-//Define table name
 @Entity (tableName = "task")
 public class Task implements Serializable {
 
-    //Create id column
     @PrimaryKey(autoGenerate = true)
     private int ID;
 
-    //Create text column
     @ColumnInfo(name = "task_name")
     private String taskName;
 

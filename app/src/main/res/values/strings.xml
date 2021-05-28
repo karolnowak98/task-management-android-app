@@ -1,32 +1,30 @@
 <resources>
-    <string name="app_name">TaskManagement</string>
+    <string name="app_name">Zarządzanie Zadaniami</string>
+    <string name="app_title">Zarządzanie zadaniami</string>
 
-    <!--  activity_main -->
+    <!-- Common strings -->
     <string name="tv_list_of_tasks">Lista zaplanowanych zadań</string>
-    <string name="btn_add_new_task_title">Dodaj nowe zadanie</string>
     <string name="tv_no_tasks">Nie masz żadnych zadań do wykonania!</string>
-
-    <!--  activity_add_task -->
+    <string name="btn_add_new_task_title">Dodaj nowe zadanie</string>
     <string name="tv_task_name">Nazwa zadania: </string>
     <string name="et_task_name_hint">Napisać aplikację</string>
     <string name="tv_task_date">Data wykonania: </string>
-    <string name="btn_picker_task_date_hint">data</string>
-
+    <string name="tv_task_category">Kategoria: </string>
     <string name="rb_job">praca</string>
     <string name="rb_shopping">zakupy</string>
     <string name="rb_other">inne</string>
-
     <string name="btn_add_task_title">Dodaj nowe zadanie</string>
+    <string name="btn_cancel_title">Anuluj</string>
+
+    <!-- Error Strings -->
     <string name="err_task_name">Nazwa nie może być pusta!</string>
     <string name="err_rg_task_category">Zaznacz jedną z opcji!</string>
 
-    <string name="btn_cancel_title">Anuluj</string>
+    <!-- Toast/Dialog Strings -->
     <string name="toast_text">Zadanie zostało dodane!</string>
     <string name="dialog_title">Próba się nie powiodła</string>
     <string name="dialog_text">Czy chcesz ponowić próbę dodania zadania?</string>
     <string name="dialog_yes">Tak</string>
     <string name="dialog_no">Nie</string>
-
-    <!--  row_task -->
 
 </resources>

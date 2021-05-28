@@ -1,8 +1,6 @@
 package com.example.taskmanagement.adapters;
 
-import android.app.Activity;
 import android.content.Context;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +17,7 @@ import java.util.List;
 public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.ViewHolder> {
 
     private List<Task> taskList;
-    private Context context;
+    private final Context context;
 
     public TaskListAdapter(Context context){
         this.context = context;

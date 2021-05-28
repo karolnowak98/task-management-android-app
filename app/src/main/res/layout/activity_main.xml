@@ -1,65 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto" >
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
 
     <LinearLayout
+        android:id="@+id/ll_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/first_level_lay"
         android:orientation="vertical"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent" >
+        app:layout_constraintLeft_toLeftOf="parent">
 
         <TextView
+            android:id="@+id/tv_tasks"
+            android:text="@string/tv_list_of_tasks"
+            style="@style/tvTitleStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="10dp"
-            android:id="@+id/tv_tasks"
-            style="@style/tvTitleStyle"
-            android:text="@string/tv_list_of_tasks"
             android:visibility="gone" />
 
         <TextView
             android:id="@+id/tv_no_tasks"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:text="@string/tv_no_tasks"
             style="@style/tvTitleStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center"
-            app:layout_constraintTop_toBottomOf="@+id/first_level_lay"
-            android:layout_marginTop="10dp" />
+            android:layout_marginTop="10dp"
+            app:layout_constraintTop_toBottomOf="@+id/ll_title"/>
 
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_list_of_tasks"
+        tools:listitem="@layout/row_task"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginRight="10dp"
         android:layout_marginLeft="10dp"
-        android:layout_marginTop="20dp"
-        tools:listitem="@layout/row_task"
-        app:layout_constraintLeft_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/first_level_lay"/>
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="70dp"
+        app:layout_constraintLeft_toRightOf="parent" />
 
     <LinearLayout
+        android:id="@+id/ll_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent" >
 
         <Button
-            android:layout_width="wrap_content"
-            style="@style/btnStyle"
-            android:layout_gravity="center"
-            android:layout_marginBottom="10dp"
             android:id="@+id/btn_add_task"
-            android:text="@string/btn_add_new_task_title" />
+            android:text="@string/btn_add_new_task_title"
+            style="@style/btnStyle"
+            app:backgroundTint="@android:color/holo_green_light"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="10dp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
